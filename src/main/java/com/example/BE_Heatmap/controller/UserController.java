@@ -35,6 +35,7 @@ public class UserController {
     }
 
     // 2. User login
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
         User loggedInUser = userService.loginUser(email, password);

@@ -42,7 +42,15 @@ public class UserService {
 
 
     public User loginUser(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password);
+        User user = userRepository.findByEmail(email); // Fetch user by email
+        if (user != null) {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            // Compare the raw password with the hashed password
+            if (encoder.matches(password, user.getPassword())) {
+                return user; // Return the user if password matches
+            }
+        }
+        return null; // Return null if user is not found or password doesn't match
     }
 
     public void deleteUser(String id) {
