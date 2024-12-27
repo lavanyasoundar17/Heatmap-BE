@@ -8,39 +8,49 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
 
-    private final String secretKey = System.getenv("JWT_SECRET_KEY");
+    private final Algorithm algorithm = Algorithm.HMAC256("Tr@velHe@tM@p");
+    private final String issuer = "travelHeatMapApp";
+    private final JWTVerifier verifier;
+
+    public JwtUtil() {
+        verifier = JWT.require(algorithm)
+                .withIssuer(issuer)
+                .build();
+    }
 
     // Generate JWT Token
-    public String generateToken(String username) {
+    public String generateToken(String userId) {
         return JWT.create()
-                .withSubject(username) // Set the username as the subject
-                .withIssuedAt(new Date()) // Set issued date
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1-hour expiry
-                .sign(Algorithm.HMAC256(secretKey)); // Sign with HMAC256 and secret key
+                .withIssuer(issuer)
+                .withSubject("user details")
+                .withClaim("userId", userId)
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() +  3600000 * 8))
+                .withJWTId(UUID.randomUUID()
+                        .toString())
+                .sign(algorithm);
     }
 
     // Validate JWT Token
-    public boolean validateToken(String token, String username) {
+    public boolean validateToken(String token) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withSubject(username)
-                    .build();
-
+            // DecodedJWT decodedJWT = verifier.verify(token);
             verifier.verify(token);
             return true;
         } catch (JWTVerificationException e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
 
     // Extract username from the token
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         DecodedJWT decodedJWT = JWT.decode(token);
-        return decodedJWT.getSubject(); // Get the subject (username)
+        return decodedJWT.getClaim("userId").toString(); // Get the subject (username)
     }
 }

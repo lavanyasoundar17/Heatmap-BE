@@ -1,11 +1,13 @@
 package com.example.BE_Heatmap.controller;
 
+import com.example.BE_Heatmap.dto.LoginRequest;
 import com.example.BE_Heatmap.model.User;
 import com.example.BE_Heatmap.service.UserService;
 import com.example.BE_Heatmap.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -35,48 +37,47 @@ public class UserController {
     }
 
     // 2. User login
-    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
-        User loggedInUser = userService.loginUser(email, password);
+    public ResponseEntity<?> loginUser(
+            @RequestBody LoginRequest payload
+            //@RequestParam String email, @RequestParam String password
+    ) {
+        User loggedInUser = userService.loginUser(payload);
 
         if (loggedInUser != null) {
-            String token = jwtUtil.generateToken(loggedInUser.getEmail());
+            String token = jwtUtil.generateToken(loggedInUser.getId());
             Map<String, Object> response = new HashMap<>();
             response.put("id", loggedInUser.getId());
             response.put("name", loggedInUser.getName());
             response.put("email", loggedInUser.getEmail());
             response.put("profileImageUrl", loggedInUser.getProfileImageUrl());
             response.put("token", token);  // Add JWT token
-
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
     }
 
-    // 3. Delete user by ID
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully");
-    }
-
-    // 4. Update user profile
-    @PutMapping("/profile-update/{id}")
-    public ResponseEntity<?> updateUserProfile(@PathVariable String id, @RequestBody User updatedUser) {
-        User updated = userService.updateUser(id, updatedUser);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        } else {
-            return ResponseEntity.status(404).body("User not found");
-        }
-    }
-
     // 5. Upload profile image
-    @PostMapping("/profile-img/{id}")
-    public ResponseEntity<?> uploadProfileImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
-        String filePath = userService.uploadProfileImage(id, file);
-        return ResponseEntity.ok("Profile image uploaded successfully to " + filePath);
-    }
+//    @PostMapping("/upload-profile-img")
+//    public ResponseEntity<?> uploadProfileImage(@RequestHeader("Authorization") String bearerToken, @RequestParam("file") MultipartFile file) {
+//        String token = bearerToken.split(" ")[1];
+//        String userId = jwtUtil.extractUserId(token);
+//        String filePath = userService.uploadProfileImage(userId, file);
+//        return ResponseEntity.ok("Profile image uploaded successfully to " + filePath);
+//    }
+//
+//    @GetMapping("/profile/image")
+//    public ResponseEntity<?> getProfileImage(@RequestHeader("Authorization") String bearerToken) {
+//        String token = bearerToken.split(" ")[1];
+//        String userId = jwtUtil.extractUserId(token);
+//        try {
+//            File profileImg = userService.getProfileImage(userId);
+//            byte[] fileContent = Files.readAllBytes(profileImg.toPath());
+//            return ResponseEntity.ok(fileContent);
+//        }catch (Exception e) {
+//            return ResponseEntity.status(401).body("file not found");
+//        }
+//
+//    }
 }

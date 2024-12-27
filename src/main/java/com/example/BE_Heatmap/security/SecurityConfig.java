@@ -33,10 +33,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers(new AntPathRequestMatcher("/user/**"))
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/location/**"))
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/user/reg", "/user/login").permitAll()
                         .requestMatchers("/files/upload").authenticated()
+                        .requestMatchers("/location/saveAll").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);

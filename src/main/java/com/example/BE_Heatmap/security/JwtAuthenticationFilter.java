@@ -23,22 +23,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
-        String username = null;
+        String userId = null;
 
         // Extract the JWT token from the Authorization header if it's in the format "Bearer <token>"
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);  // Extract token after "Bearer "
-            username = jwtUtil.extractUsername(token);  // Extract username from the token
+            userId = jwtUtil.extractUserId(token);  // Extract userId from the token
         }
 
         // Validate the token and set the authentication if valid
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(token, username)) {
-                // If the token is valid, create an authentication object with the username
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (jwtUtil.validateToken(token)) {
+                // If the token is valid, create an authentication object with the userId
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, null);
+                        userId, null, null);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                System.out.println("JWT Token validated and user authenticated: " + username);
+                System.out.println("JWT Token validated and user authenticated: " + userId);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
