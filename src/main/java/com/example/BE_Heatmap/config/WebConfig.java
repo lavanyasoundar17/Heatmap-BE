@@ -13,12 +13,13 @@ public class WebConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:5174"); // Frontend origin
+        config.addAllowedOrigin("http://localhost:5173/"); // Frontend origin
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+        //source.registerCorsConfiguration("/location/get", config);
         return new CorsFilter(source);
     }
 }
