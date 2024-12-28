@@ -1,11 +1,19 @@
 **Overview**
 The Travel Heatmap project is a web application designed to visualize popular travel destinations. Users can contribute data about places they’ve visited, and the application aggregates this information to generate a heatmap of travel activity.
+
 Technologies Used
-**Frontend:** React with TypeScript
+
+**Frontend:** 
+React with TypeScript
+
 **Frontend Project Link**
 https://github.com/lavanyasoundar17/heatmap-fe/tree/develop
-**Backend:** Spring Boot
-**Database:** MongoDB
+
+**Backend:** 
+Spring Boot
+
+**Database:** 
+MongoDB
 
 **Features**
 **Frontend**
